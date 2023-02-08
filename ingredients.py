@@ -43,7 +43,7 @@ def new_ingredient():
         # this will need to be changed
         new_product_code = str(int(last_product_code) + 1).zfill(4)
     else:
-        # If there are no items in the database, 
+        # If there are no items in the database,
         # set the first product code to "0001"
         new_product_code = "0001"
 
@@ -73,6 +73,9 @@ def new_ingredient():
         print(
             f"Item '{ingredient_name}' has been added to the list with product code '{new_product_code}'."
         )
+
+
+# new_ingredient()
 
 
 def update_ingredient():

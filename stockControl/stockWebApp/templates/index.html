@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Stock Control</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="text-center">Stock Control</h1>
+      <table class="table table-bordered mt-5">
+        <thead>
+          <tr>
+            <th>Product Code</th>
+            <th>Ingredient</th>
+            <th>Pack Size (g)</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ingredient in ingredients %}
+          <tr>
+            <td>{{ ingredient.product_code }}</td>
+            <td>{{ ingredient.ingredient }}</td>
+            <td>{{ ingredient.pack_size }}</td>
+            <td>{{ ingredient.price_per_pack }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
+
+
+
+
