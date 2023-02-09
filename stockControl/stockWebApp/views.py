@@ -16,10 +16,22 @@ def stock_control(request):
     # Initialize an empty list to store the capitalized ingredients
     capitalized_ingredients = []
 
-    # Loop through each ingredient, capitalize each word in the "ingredient" field, and append to the capitalized_ingredients list
+    # Loop through each ingredient and capitalize each word in the "ingredient" field
     for ingredient in ingredients:
         ingredient['ingredient'] = ingredient['ingredient'].title()
+        # Round each price to 2 decimal places
+        ingredient['price_per_pack'] = "{:.2f}".format(ingredient['price_per_pack'])
+        pack_size = ingredient['pack_size']
+        # Round each pack size to 2 decimal places if float
+        if int(pack_size) == pack_size:
+            pack_size = "{:.0f}".format(pack_size)
+        else:
+            pack_size = "{:.2f}".format(pack_size)
+        ingredient['pack_size'] = pack_size
+        # Append to the capitalized_ingredients list
         capitalized_ingredients.append(ingredient)
+
 
     # Render the "index.html" template with the capitalized ingredients
     return render(request, 'index.html', {'ingredients': capitalized_ingredients})
+
