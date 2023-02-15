@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block content %}
+<br />
+<br />
+<div class="container">
+  <div class="form-floating mb-3">
+    <input
+      type="text"
+      class="form-control"
+      id="floatingIngredient"
+      placeholder="Ingredient"
+    />
+    <label for="floatingIngredient">Ingredient</label>
+  </div>
+  <div class="form-floating mb-3">
+    <input
+      type="text"
+      class="form-control"
+      id="floatingPrice"
+      placeholder="Price"
+    />
+    <label for="floatingPrice">Price</label>
+  </div>
+  <div class="form-floating mb-3">
+    <input
+      type="text"
+      class="form-control"
+      id="floatingPackSize"
+      placeholder="Pack Size (g)"
+    />
+    <label for="floatingPackSize">Pack Size (g)</label>
+  </div>
+
+  <div class="text-left">
+    <button type="button" class="btn btn-secondary pull-left">
+      Add Ingredient
+    </button>
+  </div>
+</div>
+
+{% endblock %}

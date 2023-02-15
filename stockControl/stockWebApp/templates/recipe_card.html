@@ -1,4 +1,10 @@
 {% extends "base.html" %} {% block content %}
+<style>
+  .card {
+    height: 450px;
+  }
+</style>
+<br />
 <br />
 <h1>Recipes:</h1>
 <br />
@@ -7,19 +13,25 @@
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     {% for recipe in recipe_data %}
     <div class="col">
-      <div class="card h-100">
-        <div class="card">
+      <div class="card flex-grow-1">
+        <div class="card text-bg-light">
           <div class="card-body">
-            <h5 class="card-title">{{ recipe.name }}</h5>
-            <p class="card-text">Code: {{ recipe.code }}</p>
+            <br />
+            <h5 class="card-title">{{ recipe.name|title }}</h5>
+            <p class="card-text">
+              Code:
+              <span>{{ recipe.code }}</span>
+              &nbsp;&nbsp; Total Cost:
+              <span>{{ recipe.recipe_cost|floatformat:2 }}</span>
+            </p>
+            <br />
             <ul class="list-group list-group-flush">
               {% for ingredient, quantity in recipe.ingredients.items %}
-              <li class="list-group-item">{{ ingredient }}: {{ quantity }}g</li>
+              <li class="list-group-item">
+                {{ ingredient|title }}: {{ quantity }}g
+              </li>
               {% endfor %}
             </ul>
-            <p class="card-text">
-              Cost: {{ recipe.recipe_cost|floatformat:2 }}
-            </p>
           </div>
         </div>
       </div>

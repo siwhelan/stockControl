@@ -76,6 +76,10 @@ def home(request):
     return render(request, 'base.html')
 
 
+def add_new_ingredient(request):
+    return render(request, 'add_new_ingredient.html')
+
+
 def view_recipe(request):
     # Connect to MongoDB
     client = MongoClient('mongodb://localhost:27017/')
