@@ -40,7 +40,7 @@ def view_ingredients(request):
     return render(request, 'view_all_ing.html', {'ingredients': capitalized_ingredients})
 
 
-def stocktake(request):
+def stock_entry(request):
 
     # Connect to the MongoDB database
     client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -61,14 +61,14 @@ def stocktake(request):
             ingredient['price_per_pack'])
         pack_size = ingredient['pack_size']
         # Round each pack size to 2 decimal places if float
-        if int(pack_size) == pack_size:
+        if float(pack_size) == pack_size:
             pack_size = "{:.0f}".format(pack_size)
         else:
             pack_size = "{:.2f}".format(pack_size)
         ingredient['pack_size'] = pack_size
         # Format the amount field in the same way as pack_size
         amount = ingredient['amount']
-        if int(amount) == amount:
+        if (amount) == amount:
             amount = "{:.0f}".format(amount)
         else:
             amount = "{:.2f}".format(amount)
@@ -77,7 +77,7 @@ def stocktake(request):
         capitalized_ingredients.append(ingredient)
 
     # Render the "index.html" template with the capitalized ingredients
-    return render(request, 'stocktake.html', {'ingredients': capitalized_ingredients})
+    return render(request, 'stock_entry.html', {'ingredients': capitalized_ingredients})
 
 
 # View Home Page (currently navbar only)
@@ -127,7 +127,8 @@ def save_stock_entry(request):
         for key, value in request.POST.items():
             if key.startswith("ingredient_") and value != "":
                 product_code = key.split("_")[1]
-                amount = int(value)
+                # convert to float and remove commas
+                amount = float(value.replace(",", ""))
 
                 # Update MongoDB document
                 ingredients.update_one(
@@ -138,10 +139,10 @@ def save_stock_entry(request):
         # Render success message in the same template
         message = "Stock entry saved successfully."
         ingredients = ingredients.find()
-        return render(request, "stocktake.html", {"ingredients": ingredients, "message": message})
+        return render(request, "stock_entry.html", {"ingredients": ingredients, "message": message})
     else:
         # Render form page
         client = MongoClient('mongodb://localhost:27017/')
         db = client['stock_control']
         ingredients = db['ingredients'].find()
-        return render(request, "stocktake.html", {"ingredients": ingredients})
+        return render(request, "stock_entry.html", {"ingredients": ingredients})

@@ -31,16 +31,17 @@
           {% for ingredient in ingredients %}
           <tr>
             <td>{{ ingredient.product_code }}</td>
-            <td>{{ ingredient.ingredient }}</td>
+            <td>{{ ingredient.ingredient|title }}</td>
             <td>{{ ingredient.pack_size }}</td>
             <td>{{ ingredient.price_per_pack }}</td>
-            <td>{{ ingredient.amount|floatformat:1 }}</td>
+            <td>{{ ingredient.amount }}</td>
             <td>
               <input
                 type="number"
                 class="form-control-sm"
                 placeholder="Enter quantity"
                 name="ingredient_{{ ingredient.product_code }}"
+                step="0.01"
               />
             </td>
           </tr>

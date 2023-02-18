@@ -1,0 +1,50 @@
+body {
+  font-size: 14px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+}
+
+.navbar.bg-custom-2 {
+  background-image: linear-gradient(
+    -225deg,
+    rgba(105, 234, 203, 1) 0%,
+    rgba(234, 204, 248, 0.5) 50%,
+    rgba(102, 84, 241, 0) 100%
+  );
+}
+
+.navbar {
+  font-size: 15px;
+}
+
+h1 {
+  font-size: 50px;
+  background: -webkit-linear-gradient(#eee, #333);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+table td,
+table th {
+  font-size: 14px;
+}
+
+table tbody tr td {
+  vertical-align: middle;
+}
+
+.btn.bg-gradient-primary {
+  background-image: linear-gradient(
+    -225deg,
+    rgba(105, 234, 203, 1) 0%,
+    rgba(234, 204, 248, 0.5) 50%,
+    rgba(102, 84, 241, 0) 100%
+  );
+}
