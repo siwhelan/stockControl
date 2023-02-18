@@ -1,5 +1,8 @@
+from .models import Ingredient
+from django.contrib import messages
 from pymongo import MongoClient
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.conf import settings
 import pymongo
 
 # Create your views here.
@@ -63,11 +66,19 @@ def stocktake(request):
         else:
             pack_size = "{:.2f}".format(pack_size)
         ingredient['pack_size'] = pack_size
+        # Format the amount field in the same way as pack_size
+        amount = ingredient['amount']
+        if int(amount) == amount:
+            amount = "{:.0f}".format(amount)
+        else:
+            amount = "{:.2f}".format(amount)
+        ingredient['amount'] = amount
         # Append to the capitalized_ingredients list
         capitalized_ingredients.append(ingredient)
 
     # Render the "index.html" template with the capitalized ingredients
     return render(request, 'stocktake.html', {'ingredients': capitalized_ingredients})
+
 
 # View Home Page (currently navbar only)
 
@@ -103,3 +114,34 @@ def view_recipe(request):
         'recipe_data': recipe_data
     }
     return render(request, 'recipe_card.html', context)
+
+
+def save_stock_entry(request):
+    if request.method == "POST":
+        # Connect to MongoDB
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['stock_control']
+        ingredients = db['ingredients']
+
+        # Parse form data
+        for key, value in request.POST.items():
+            if key.startswith("ingredient_") and value != "":
+                product_code = key.split("_")[1]
+                amount = int(value)
+
+                # Update MongoDB document
+                ingredients.update_one(
+                    {"product_code": product_code},
+                    {"$set": {"amount": amount}}
+                )
+
+        # Render success message in the same template
+        message = "Stock entry saved successfully."
+        ingredients = ingredients.find()
+        return render(request, "stocktake.html", {"ingredients": ingredients, "message": message})
+    else:
+        # Render form page
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['stock_control']
+        ingredients = db['ingredients'].find()
+        return render(request, "stocktake.html", {"ingredients": ingredients})

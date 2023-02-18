@@ -8,6 +8,7 @@
           <th>Ingredient</th>
           <th>Pack Size (g)</th>
           <th>Price</th>
+          <th>In Stock (g)</th>
         </tr>
       </thead>
       <tbody>
@@ -17,6 +18,7 @@
           <td>{{ ingredient.ingredient }}</td>
           <td>{{ ingredient.pack_size }}</td>
           <td>{{ ingredient.price_per_pack }}</td>
+          <td>{{ ingredient.amount }}</td>
         </tr>
         {% endfor %}
       </tbody>

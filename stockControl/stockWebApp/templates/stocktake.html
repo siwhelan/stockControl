@@ -1,34 +1,63 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
-  <div class="col text-center">
-    <table class="table table-striped mt-5">
-      <thead>
-        <tr>
-          <th>Product Code</th>
-          <th>Ingredient</th>
-          <th>Pack Size (g)</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ingredient in ingredients %}
-        <tr>
-          <td>{{ ingredient.product_code }}</td>
-          <td>{{ ingredient.ingredient }}</td>
-          <td>{{ ingredient.pack_size }}</td>
-          <td>{{ ingredient.price_per_pack }}</td>
-          <td>
-            <input
-              type="text"
-              class="form-control-sm"
-              placeholder="Enter quantity"
-            />
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="col-12 text-center">
+    <br />
+    <br />
+    {% if message %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endif %}
+    <h1>Stock Entry</h1>
+    <form method="post" action="{% url 'save_stock_entry' %}">
+      {% csrf_token %}
+      <table class="table table-striped mt-5">
+        <thead>
+          <tr>
+            <th>Product Code</th>
+            <th>Ingredient</th>
+            <th>Pack Size (g)</th>
+            <th>Price</th>
+            <th>Current Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ingredient in ingredients %}
+          <tr>
+            <td>{{ ingredient.product_code }}</td>
+            <td>{{ ingredient.ingredient }}</td>
+            <td>{{ ingredient.pack_size }}</td>
+            <td>{{ ingredient.price_per_pack }}</td>
+            <td>{{ ingredient.amount|floatformat:1 }}</td>
+            <td>
+              <input
+                type="number"
+                class="form-control-sm"
+                placeholder="Enter quantity"
+                name="ingredient_{{ ingredient.product_code }}"
+              />
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <br />
+      <div class="d-grid gap-2 col-2 mx-auto text-end">
+        <button
+          class="btn btn-secondary bg-gradient bg-gradient-primary shadow"
+          type="submit"
+        >
+          Save
+        </button>
+      </div>
+    </form>
   </div>
+  <br />
 </div>
-
 {% endblock %}
