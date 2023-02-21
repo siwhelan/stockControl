@@ -57,12 +57,14 @@ class Recipe:
         ingredients = {}
         while True:
             ingredient = input(
-                "Enter ingredient name (or enter 'done' when finished): ")
-            if ingredient.lower() == 'done':
+                "Enter ingredient name (or enter 'done' when finished): "
+            )
+            if ingredient.lower() == "done":
                 break
             # Check if the ingredient exists in the ingredients collection
             existing_product = ingredients_collection.find_one(
-                {"ingredient": ingredient})
+                {"ingredient": ingredient}
+            )
             if existing_product:
                 # Check if the ingredient amount is a valid integer
                 try:
@@ -70,16 +72,21 @@ class Recipe:
                     ingredients[ingredient] = amount
                 except ValueError:
                     print(
-                        f"Amount for {ingredient} must be a number. Please try again.")
+                        f"Amount for {ingredient} must be a number. Please try again."
+                    )
             else:
                 print(
-                    f"Ingredient {ingredient} does not exist in the ingredients collection.")
+                    f"Ingredient {ingredient} does not exist in the ingredients collection."
+                )
                 print("Please add the ingredient to the collection first.")
                 return  # Abort the recipe creation process
 
         # Insert the recipe into the recipes collection
-        recipe = {"name": recipe_name,
-                  "ingredients": ingredients, 'code': recipe_code}
+        recipe = {
+            "name": recipe_name,
+            "ingredients": ingredients,
+            "code": recipe_code,
+        }
         recipes_collection.insert_one(recipe)
         print(f"Successfully added {recipe_name} recipe to the database!")
         calculate_recipe_costs()
@@ -88,8 +95,17 @@ class Recipe:
 
 
 # Create a new recipe object
-recipe = Recipe("cake mix", {"butter": 175, "sugar": 175, "eggs": 3,
-                "flour": 175, "baking powder": 25, "vanilla extract": 5})
+recipe = Recipe(
+    "cake mix",
+    {
+        "butter": 175,
+        "sugar": 175,
+        "eggs": 3,
+        "flour": 175,
+        "baking powder": 25,
+        "vanilla extract": 5,
+    },
+)
 
 # Call the add_recipe method
 recipe.add_recipe()
