@@ -1,8 +1,5 @@
 import pymongo
-import ingredients
-from ingredients import new_ingredient
-
-
+from scripts import calculate_recipe_costs, add_amounts, delete_amounts
 
 
 def connect_to_db():
@@ -37,7 +34,7 @@ class Recipe:
         )
         return f"{self.name}: {ingredients_str}"
 
-    def add_recipe():
+    def add_recipe(self):
         # Connect to the recipes collection
         recipes_collection, ingredients_collection = connect_to_db()
 
@@ -59,31 +56,40 @@ class Recipe:
         # Create a dictionary to store ingredients and their amounts
         ingredients = {}
         while True:
-            ingredient = input("Enter ingredient name (or enter 'done' when finished): ")
-            if ingredient == 'done':
+            ingredient = input(
+                "Enter ingredient name (or enter 'done' when finished): ")
+            if ingredient.lower() == 'done':
                 break
             # Check if the ingredient exists in the ingredients collection
-            existing_product = ingredients_collection.find_one({"ingredient": ingredient})
+            existing_product = ingredients_collection.find_one(
+                {"ingredient": ingredient})
             if existing_product:
                 # Check if the ingredient amount is a valid integer
                 try:
                     amount = int(input(f"Enter amount for {ingredient}: "))
                     ingredients[ingredient] = amount
                 except ValueError:
-                    print(f"Amount for {ingredient} must be a number. Please try again.")
+                    print(
+                        f"Amount for {ingredient} must be a number. Please try again.")
             else:
-                print(f"Ingredient {ingredient} does not exist. Please add it to the database first.")
-                # Call the new_ingredient function to add the ingredient to the database
-                new_ingredient()
-                # Check if the ingredient amount is a valid integer
-                try:
-                    amount = int(input(f"Enter amount of {ingredient} required for the recipe: "))
-                    ingredients[ingredient] = amount
-                except ValueError:
-                    print(f"Amount for {ingredient} must be a number. Please try again.")
+                print(
+                    f"Ingredient {ingredient} does not exist in the ingredients collection.")
+                print("Please add the ingredient to the collection first.")
+                return  # Abort the recipe creation process
+
         # Insert the recipe into the recipes collection
-        recipe = {"name": recipe_name, "ingredients": ingredients, 'code': recipe_code}
+        recipe = {"name": recipe_name,
+                  "ingredients": ingredients, 'code': recipe_code}
         recipes_collection.insert_one(recipe)
         print(f"Successfully added {recipe_name} recipe to the database!")
+        calculate_recipe_costs()
+        delete_amounts()
+        add_amounts()
 
 
+# Create a new recipe object
+recipe = Recipe("cake mix", {"butter": 175, "sugar": 175, "eggs": 3,
+                "flour": 175, "baking powder": 25, "vanilla extract": 5})
+
+# Call the add_recipe method
+recipe.add_recipe()

@@ -1,8 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
   <div class="col-12 text-center">
-    <br />
-    <br />
     {% if message %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
       {{ message }}
@@ -14,10 +12,9 @@
       ></button>
     </div>
     {% endif %}
-    <h1>Stock Entry</h1>
     <form method="post" action="{% url 'save_stock_entry' %}">
       {% csrf_token %}
-      <table class="table table-striped mt-5">
+      <table class="table table-striped table-hover mt-5">
         <thead>
           <tr>
             <th>Product Code</th>
@@ -25,9 +22,9 @@
             <th>Pack Size (g)</th>
             <th>Price</th>
             <th>Current Stock</th>
+            <th>Enter Quantity</th>
           </tr>
         </thead>
-        <tbody>
           {% for ingredient in ingredients %}
           <tr>
             <td>{{ ingredient.product_code }}</td>
