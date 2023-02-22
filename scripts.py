@@ -94,3 +94,19 @@ def add_amounts():
         )
 
     print("All ingredients have been updated with new amounts.")
+
+from pymongo import MongoClient
+
+# Connect to MongoDB
+client = MongoClient("mongodb://localhost:27017/")
+db = client["stock_control"]
+collection = db["ingredients"]
+
+# Define the query to delete documents with "code" field >= "0065"
+query = { "product_code": { "$gte": "0065" } }
+
+# Delete matching documents
+result = collection.delete_many(query)
+
+# Print the number of deleted documents
+print(f"{result.deleted_count} documents deleted.")

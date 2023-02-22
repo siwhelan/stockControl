@@ -1,7 +1,10 @@
 {% extends "base.html" %} {% block content %}
 <div class="container">
   {% if message %}
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
+  <div
+    class="alert alert-{{ alert_type }} alert-dismissible fade show"
+    role="alert"
+  >
     {{ message }}
     <button
       type="button"

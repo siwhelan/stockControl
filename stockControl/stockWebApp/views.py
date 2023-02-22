@@ -156,10 +156,8 @@ def save_stock_entry(request):
         )
 
 
-from django.contrib import messages
-
-
 def add_ingredient(request):
+    
     if request.method == "POST":
         # Connect to MongoDB
         client = MongoClient("mongodb://localhost:27017/")
@@ -167,9 +165,26 @@ def add_ingredient(request):
         ingredients = db["ingredients"]
 
         # Get the user input from the form
-        ingredient = str(request.POST.get("ingredient"))
-        price_per_pack = float(request.POST.get("price_per_pack"))
-        pack_size = int(request.POST.get("pack_size"))
+        ingredient = request.POST.get("ingredient", "")
+        price_per_pack = request.POST.get("price_per_pack", "")
+        pack_size = request.POST.get("pack_size", "")
+
+        # Check if the ingredient already exists
+        existing_ingredient = ingredients.find_one({"ingredient": ingredient})
+        if existing_ingredient is not None:
+            # If the ingredient already exists, display an error message
+            message = "This ingredient already exists."
+            alert_type = "danger"
+            ingredients = ingredients.find()
+            return render(
+                request,
+                "add_new_ingredient.html",
+                {
+                    "ingredients": ingredients,
+                    "message": message,
+                    "alert_type": alert_type,
+                },
+            )
 
         # Get the last item in the ingredients database
         last_item = ingredients.find().sort([("product_code", -1)]).limit(1)
@@ -189,27 +204,67 @@ def add_ingredient(request):
             # set the first product code to "0001"
             new_product_code = "0001"
 
-        # Insert the new ingredient into the database
-        ingredients.insert_one(
-            {
-                "product_code": new_product_code,
-                "ingredient": ingredient,
-                "price_per_pack": price_per_pack,
-                "pack_size": pack_size,
-                "amount": pack_size,
-            }
-        )
+        # Check that the input types are correct
+        if (
+            isinstance(ingredient, str)
+            and isinstance(price_per_pack, str)
+            and isinstance(pack_size, str)
+        ):
+            try:
+                # Convert user input to correct data types
+                price_per_pack = float(price_per_pack)
+                pack_size = int(pack_size)
 
-        # Show success message
-        messages.success(request, "New ingredient added successfully.")
+                # Insert the new ingredient into the database
+                ingredients.insert_one(
+                    {
+                        "product_code": new_product_code,
+                        "ingredient": ingredient,
+                        "price_per_pack": price_per_pack,
+                        "pack_size": pack_size,
+                        "amount": pack_size,
+                    }
+                )
 
-        # Render success message in the stock_entry.html template
-        ingredients = ingredients.find()
-        message = "Stock entry saved successfully."
+                # Render success message in the add_new_ingredient.html template
+                ingredients = ingredients.find()
+                message = "New ingredient added successfully."
+                alert_type = "success"
+                return render(
+                    request,
+                    "add_new_ingredient.html",
+                    {
+                        "ingredients": ingredients,
+                        "message": message,
+                        "alert_type": alert_type,
+                    },
+                )
+
+            except ValueError:
+                # If the conversion fails, display an error message
+                message = "Please enter the correct data type for each field."
+                alert_type = "danger"
+                return render(
+                    request,
+                    "add_new_ingredient.html",
+                    {
+                        "ingredients": ingredients,
+                        "message": message,
+                        "alert_type": alert_type,
+                    },
+                )
+
+        # If the data types are incorrect, display an error message
+        message = "Please enter the correct data type for each field."
+        alert_type = "danger"
         return render(
             request,
             "add_new_ingredient.html",
-            {"ingredients": ingredients, "message": message},
+            {
+                "ingredients": ingredients,
+                "message": message,
+                "alert_type": alert_type,
+            },
         )
 
     # If the form has not been submitted, display the page
