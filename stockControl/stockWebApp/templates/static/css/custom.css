@@ -53,15 +53,6 @@ table tbody tr td {
   vertical-align: middle;
 }
 
-.btn.bg-gradient-primary {
-  background-image: linear-gradient(
-    -225deg,
-    rgba(105, 234, 203, 1) 0%,
-    rgba(234, 204, 248, 0.5) 50%,
-    rgba(102, 84, 241, 0) 100%
-  );
-}
-
 .card {
   height: 450px;
   opacity: 0;
@@ -105,4 +96,25 @@ table tbody tr td {
   color: #ffffff;
   padding: 10px;
   margin: 0;
+}
+
+.btn.bg-gradient-primary {
+  background: #de6262 !important;
+  background: -webkit-linear-gradient(to right, #ffb88c, #de6262) !important;
+  background: linear-gradient(to right, #ffb88c, #de6262) !important;
+  opacity: 0.85 !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3) !important;
+}
+
+.form-control:hover {
+  transform: translateY(-0.25rem) !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.btn.bg-gradient-primary:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.btn:hover {
+  background: #ffb88c;
 }

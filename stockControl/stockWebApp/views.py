@@ -93,10 +93,6 @@ def home(request):
     return render(request, "base.html")
 
 
-def add_new_ingredient(request):
-    return render(request, "add_new_ingredient.html")
-
-
 def view_recipe(request):
     # Connect to MongoDB
     client = MongoClient("mongodb://localhost:27017/")
@@ -158,3 +154,63 @@ def save_stock_entry(request):
         return render(
             request, "stock_entry.html", {"ingredients": ingredients}
         )
+
+
+from django.contrib import messages
+
+
+def add_ingredient(request):
+    if request.method == "POST":
+        # Connect to MongoDB
+        client = MongoClient("mongodb://localhost:27017/")
+        db = client["stock_control"]
+        ingredients = db["ingredients"]
+
+        # Get the user input from the form
+        ingredient = str(request.POST.get("ingredient"))
+        price_per_pack = float(request.POST.get("price_per_pack"))
+        pack_size = int(request.POST.get("pack_size"))
+
+        # Get the last item in the ingredients database
+        last_item = ingredients.find().sort([("product_code", -1)]).limit(1)
+
+        # Check if there are any items in the database
+        if last_item is not None:
+            # Get the product code of the last item in the database
+            last_product_code = last_item[0]["product_code"]
+
+            # Increment code by 1 to get the product code for the new ingredient
+            # .zfill(4) adds zeros to the product code so that it is always 4 digits long
+            # In the unlikely event that the kitchen uses more than 9999 ingredients,
+            # this will need to be changed
+            new_product_code = str(int(last_product_code) + 1).zfill(4)
+        else:
+            # If there are no items in the database,
+            # set the first product code to "0001"
+            new_product_code = "0001"
+
+        # Insert the new ingredient into the database
+        ingredients.insert_one(
+            {
+                "product_code": new_product_code,
+                "ingredient": ingredient,
+                "price_per_pack": price_per_pack,
+                "pack_size": pack_size,
+                "amount": pack_size,
+            }
+        )
+
+        # Show success message
+        messages.success(request, "New ingredient added successfully.")
+
+        # Render success message in the stock_entry.html template
+        ingredients = ingredients.find()
+        message = "Stock entry saved successfully."
+        return render(
+            request,
+            "add_new_ingredient.html",
+            {"ingredients": ingredients, "message": message},
+        )
+
+    # If the form has not been submitted, display the page
+    return render(request, "add_new_ingredient.html")

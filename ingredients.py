@@ -62,9 +62,7 @@ def new_ingredient():
         pack_size = float(input("What is the pack size in grams? "))
 
         # Create a new item object with the given information
-        new_item = Item(
-            new_product_code, ingredient_name, price_per_pack, pack_size
-        )
+        new_item = Item(new_product_code, ingredient_name, price_per_pack, pack_size)
 
         # Add the new item to the ingredients collection in MongoDB
         connect_to_ingredients_db().insert_one(new_item.__dict__)
@@ -80,9 +78,7 @@ def new_ingredient():
 
 def update_ingredient():
     # Get the product code of the ingredient to update
-    product_code = input(
-        "Enter the product code of the ingredient to update: "
-    )
+    product_code = input("Enter the product code of the ingredient to update: ")
 
     # Connect to the ingredients database
     collection = connect_to_ingredients_db()
@@ -131,9 +127,7 @@ def update_ingredient():
 def delete_ingredient():
 
     # Get the product code of the ingredient to delete
-    product_code = input(
-        "Enter the product code of the ingredient to delete: "
-    )
+    product_code = input("Enter the product code of the ingredient to delete: ")
 
     # Connect to the ingredients database
     collection = connect_to_ingredients_db()

@@ -1,40 +1,65 @@
 {% extends "base.html" %} {% block content %}
-<br />
-<br />
 <div class="container">
-  <div class="form-floating mb-3">
-    <input
-      type="text"
-      class="form-control"
-      id="floatingIngredient"
-      placeholder="Ingredient"
-    />
-    <label for="floatingIngredient">Ingredient</label>
+  {% if message %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
   </div>
-  <div class="form-floating mb-3">
-    <input
-      type="text"
-      class="form-control"
-      id="floatingPrice"
-      placeholder="Price"
-    />
-    <label for="floatingPrice">Price</label>
-  </div>
-  <div class="form-floating mb-3">
-    <input
-      type="text"
-      class="form-control"
-      id="floatingPackSize"
-      placeholder="Pack Size (g)"
-    />
-    <label for="floatingPackSize">Pack Size (g)</label>
-  </div>
+  {% endif %}
+  <form
+    method="POST"
+    action="{% url 'add_ingredient' %}"
+    id="add-ingredient-form"
+  >
+    {% csrf_token %}
+    <div class="form-floating col-sm-6 mx-auto mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="ingredient"
+        placeholder="Ingredient"
+        name="ingredient"
+        form="add-ingredient-form"
+      />
+      <label for="ingredient">Ingredient</label>
+    </div>
+    <div class="form-floating col-sm-6 mx-auto mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="price_per_pack"
+        placeholder="Price"
+        name="price_per_pack"
+        form="add-ingredient-form"
+      />
+      <label for="price_per_pack">Price</label>
+    </div>
+    <div class="form-floating col-sm-6 mx-auto mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="pack_size"
+        placeholder="Pack Size (g)"
+        name="pack_size"
+        form="add-ingredient-form"
+      />
+      <label for="pack_size">Pack Size (g)</label>
+    </div>
 
-  <div class="text-left">
-    <button type="button" class="btn btn-secondary pull-left">
-      Add Ingredient
-    </button>
-  </div>
+    <div class="d-grid gap-2 col-4 mx-auto">
+      <button
+        type="submit"
+        class="btn bg-gradient-primary"
+        form="add-ingredient-form"
+      >
+        Add Ingredient
+      </button>
+    </div>
+  </form>
 </div>
-
 {% endblock %}
