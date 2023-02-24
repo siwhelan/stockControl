@@ -16,7 +16,7 @@
   {% endif %}
   <form
     method="POST"
-    action="{% url 'add_ingredient' %}"
+    action="{% url 'delete_ingredient' %}"
     id="add-ingredient-form"
   >
     {% csrf_token %}
@@ -31,36 +31,13 @@
       />
       <label for="ingredient">Ingredient</label>
     </div>
-    <div class="form-floating col-sm-6 mx-auto mb-3">
-      <input
-        type="float"
-        class="form-control"
-        id="price_per_pack"
-        placeholder="Price"
-        name="price_per_pack"
-        form="add-ingredient-form"
-      />
-      <label for="price_per_pack">Price</label>
-    </div>
-    <div class="form-floating col-sm-6 mx-auto mb-3">
-      <input
-        type="number"
-        class="form-control"
-        id="pack_size"
-        placeholder="Pack Size (g)"
-        name="pack_size"
-        form="add-ingredient-form"
-      />
-      <label for="pack_size">Pack Size (g)</label>
-    </div>
-
     <div class="d-grid gap-2 col-4 mx-auto">
       <button
         type="submit"
         class="btn bg-gradient-primary"
         form="add-ingredient-form"
       >
-        Add Ingredient
+        Delete Ingredient
       </button>
     </div>
   </form>

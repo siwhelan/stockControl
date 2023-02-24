@@ -16,7 +16,7 @@
   {% endif %}
   <form
     method="POST"
-    action="{% url 'add_ingredient' %}"
+    action="{% url 'update_ingredient' %}"
     id="add-ingredient-form"
   >
     {% csrf_token %}
@@ -60,7 +60,7 @@
         class="btn bg-gradient-primary"
         form="add-ingredient-form"
       >
-        Add Ingredient
+        Update Ingredient
       </button>
     </div>
   </form>

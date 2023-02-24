@@ -87,11 +87,21 @@
                     </li>
                     <li><hr class="dropdown-divider" /></li>
                     <li>
-                      <a class="dropdown-item" href="#">Update Ingredient</a>
+                      <a
+                        class="dropdown-item"
+                        href="{% url 'update_ingredient' %}"
+                      >
+                        Update Ingredient
+                      </a>
                     </li>
                     <li><hr class="dropdown-divider" /></li>
                     <li>
-                      <a class="dropdown-item" href="#">Delete Ingredient</a>
+                      <a
+                        class="dropdown-item"
+                        href="{% url 'delete_ingredient' %}"
+                      >
+                        Delete Ingredient
+                      </a>
                     </li>
                   </ul>
                 </li>
@@ -120,7 +130,7 @@
                   </ul>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Ordering</a>
+                  <a class="nav-link" href="{% url 'orders' %}">Ordering</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'save_stock_entry' %}">
@@ -128,7 +138,7 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Wastage</a>
+                  <a class="nav-link" href="{% url 'wastage' %}">Wastage</a>
                 </li>
               </ul>
               <form class="d-flex" role="search">

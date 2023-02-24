@@ -63,6 +63,8 @@ def calculate_recipe_costs():
         # Print a success message
         print(f"Successfully calculated cost for recipe {recipe['name']}")
 
+calculate_recipe_costs()
+
 
 def delete_amounts():
     # Connect to MongoDB
