@@ -1,0 +1,99 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="container mx-auto">
+  <form>
+    <div class="form-group">
+      <input
+        type="text"
+        class="form-control form-floating mx-auto mb-3"
+        id="name"
+        name="name"
+        placeholder="Recipe Name"
+      />
+    </div>
+
+    <div id="ingredients">
+      <div class="form-group ms-auto">
+        <div class="row">
+          <div class="col-4">
+            <input
+              type="text"
+              class="form-control form-floating col-sm-6 mb-3"
+              id="ingredient1"
+              name="ingredient1"
+              placeholder="Ingredient"
+            />
+          </div>
+          <div class="col-4">
+            <input
+              type="text"
+              class="form-control form-floating col-sm-6 mb-3"
+              id="amount1"
+              name="amount1"
+              placeholder="Amount"
+            />
+          </div>
+          <div class="col-4">
+            <button
+              class="btn btn-danger"
+              type="button"
+              onclick="removeIngredient(this)"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button
+        class="btn bg-gradient-primary shadow me-2"
+        type="button"
+        onclick="addIngredient()"
+      >
+        Add Ingredient
+      </button>
+      <button class="btn bg-gradient-primary shadow" type="submit">
+        Save Recipe
+      </button>
+    </div>
+  </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  let ingredientIndex = 1
+
+  function addIngredient() {
+    const newInput = `
+        <div class="form-group">
+          <div class="row">
+            <div class="col-4">
+              <input type="text" class="form-control form-floating col-sm-6 mx-auto mb-3" id="ingredient${
+                ingredientIndex + 1
+              }" name="ingredient${
+      ingredientIndex + 1
+    }" placeholder="Ingredient">
+            </div>
+            <div class="col-4">
+              <input type="text" class="form-control form-floating col-sm-6 mx-auto mb-3" id="amount${
+                ingredientIndex + 1
+              }" name="amount${ingredientIndex + 1}" placeholder="Amount">
+            </div>
+            <div class="col-4">
+              <button class="btn btn-danger" type="button" onclick="removeIngredient(this)">Remove</button>
+            </div>
+          </div>
+        </div>
+      `
+    $('#ingredients').append(newInput)
+    ingredientIndex++
+  }
+
+  function removeIngredient(button) {
+    $(button).closest('.form-group').remove()
+  }
+</script>
+
+{% endblock %}

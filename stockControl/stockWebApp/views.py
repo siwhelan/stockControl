@@ -371,6 +371,10 @@ def view_recipe(request):
     return render(request, "recipe_card.html", context)
 
 
+def add_recipe(request):
+    return render(request, "add_recipe.html")
+
+
 def save_stock_entry(request):
     if request.method == "POST":
         # Connect to MongoDB
