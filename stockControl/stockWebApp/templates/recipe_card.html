@@ -13,8 +13,10 @@
             <p class="card-text">
               Code:
               <span>{{ recipe.code }}</span>
-              &nbsp;&nbsp; Total Cost:
+              &nbsp;&nbsp; Cost:
               <span>{{ recipe.recipe_cost|floatformat:2 }}</span>
+              &nbsp;&nbsp; Sale Price:
+              <span>{{ recipe.selling_price|floatformat:2 }}</span>
             </p>
             <br />
             <ul class="list-group list-group-flush">

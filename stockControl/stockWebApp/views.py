@@ -53,12 +53,14 @@ def add_ingredient(request):
         ingredients = db["ingredients"]
 
         # Get the user input from the form
-        ingredient = request.POST.get("ingredient", "")
+        ingredient = request.POST.get("ingredient", "").lower()
         price_per_pack = request.POST.get("price_per_pack", "")
         pack_size = request.POST.get("pack_size", "")
 
         # Check if the ingredient already exists
-        existing_ingredient = ingredients.find_one({"ingredient": ingredient})
+        existing_ingredient = ingredients.find_one(
+            {"ingredient": ingredient.lower()}
+        )
         if existing_ingredient is not None:
             # If the ingredient already exists, display an error message
             message = "This ingredient already exists."
@@ -171,7 +173,7 @@ def update_ingredient(request):
         ingredients = db["ingredients"]
 
         # Get the user input from the form
-        ingredient = request.POST.get("ingredient", "")
+        ingredient = request.POST.get("ingredient", "").lower()
         price_per_pack = request.POST.get("price_per_pack", "")
         pack_size = request.POST.get("pack_size", "")
 
@@ -337,12 +339,17 @@ def calculate_recipe_costs():
             # Add the cost of the ingredient to the total cost
             cost += ingredient_cost
 
-        # Update the recipe document with the calculated cost
+        # Calculate the selling price of the recipe with a 75% gross profit margin
+        selling_price = cost / 0.25
+        # Update the recipe document with the calculated cost and selling price
         recipes_collection.update_one(
-            {"_id": recipe["_id"]}, {"$set": {"recipe_cost": cost}}
+            {"_id": recipe["_id"]},
+            {"$set": {"recipe_cost": cost, "selling_price": selling_price}},
         )
         # Print a success message
-        print(f"Successfully calculated cost for recipe {recipe['name']}")
+        print(
+            f"Successfully calculated cost and selling price for recipe {recipe['name']}"
+        )
 
 
 def view_recipe(request):
@@ -365,6 +372,7 @@ def view_recipe(request):
                 "ingredients": recipe["ingredients"],
                 "code": recipe["code"],
                 "recipe_cost": recipe["recipe_cost"],
+                "selling_price": recipe["selling_price"],
             }
         )
 
@@ -393,8 +401,7 @@ def add_recipe(request):
     if request.method == "POST":
 
         # Extract the name of the recipe from the form data
-        name = request.POST.get("name")
-
+        name = request.POST.get("name", "").lower()
         # Create an empty dictionary to hold the ingredients and their amounts
         ingredients = {}
 
@@ -405,7 +412,7 @@ def add_recipe(request):
             if key.startswith("ingredient_") and request.POST.get(key):
 
                 # Extract the name of the ingredient
-                ingredient_name = request.POST.get(key)
+                ingredient_name = request.POST.get(key).lower()
 
                 # Extract the amount of the ingredient
                 amount_key = "amount" + key.split("ingredient")[1]
@@ -542,7 +549,7 @@ def edit_recipe(request):
             if key.startswith("ingredient_") and request.POST.get(key):
 
                 # Extract the name of the ingredient
-                ingredient_name = request.POST.get(key)
+                ingredient_name = request.POST.get(key).lower()
 
                 # Extract the amount of the ingredient
                 amount_key = "amount" + key.split("ingredient")[1]
@@ -768,3 +775,56 @@ def search_recipes(request):
             "search_results.html",
             {"message": message, "alert_type": alert_type},
         )
+
+
+def sales(request):
+    if request.method == "POST":
+        # Connect to MongoDB
+        client = MongoClient("mongodb://localhost:27017/")
+        db = client["stock_control"]
+        ingredients = db["ingredients"]
+        recipes = db["recipes"]
+
+        # Parse form data and calculate total quantity sold and sales for each recipe
+        total_sold = {}
+        total_sales = 0
+        for key, value in request.POST.items():
+            if key.startswith("recipe_") and value != "":
+                # Get recipe code and quantity sold from form data
+                recipe_code = key.split("_")[1]
+                quantity_sold = -float(
+                    value.replace(",", "")
+                )  # negative value for reduction
+                # Query recipes collection to get selling price
+                recipe = recipes.find_one({"code": recipe_code})
+                selling_price = recipe["selling_price"]
+                # Calculate total sales
+                total_sales += -quantity_sold * selling_price
+                # Update total quantity sold for this recipe
+                total_sold[recipe_code] = (
+                    total_sold.get(recipe_code, 0) + quantity_sold
+                )
+
+        # Update MongoDB documents by reducing the existing amount for each ingredient
+        for ingredient_name, quantity in total_sold.items():
+            recipe = recipes.find_one({"code": ingredient_name})
+            for ingredient_name, ingredient_amount in recipe[
+                "ingredients"
+            ].items():
+                ingredients.update_one(
+                    {"ingredient": ingredient_name},
+                    {"$inc": {"amount": ingredient_amount * quantity}},
+                )
+
+        # Render success message in the same template with total sales
+        message = f"Sales recorded and stock updated. Total sales: £{total_sales:.2f}"
+        recipe = recipes.find()
+        return render(
+            request, "sales.html", {"recipes": recipe, "message": message}
+        )
+    else:
+        # Render form page
+        client = MongoClient("mongodb://localhost:27017/")
+        db = client["stock_control"]
+        recipes = db["recipes"].find()
+        return render(request, "sales.html", {"recipes": recipes})

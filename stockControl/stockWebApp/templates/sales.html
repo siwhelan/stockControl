@@ -11,36 +11,27 @@
         aria-label="Close"
       ></button>
     </div>
-{% endif %}
-{% if total_revenue %}
-    <p>Total revenue: ${{ total_revenue }}</p>
-{% endif %}
-    <form method="post" action="{% url 'wastage' %}">
+    {% endif %}
+    <form method="post" action="{% url 'sales' %}">
       {% csrf_token %}
       <table class="table table-striped table-hover mt-5">
         <thead>
           <tr>
             <th>Product Code</th>
-            <th>Ingredient</th>
-            <th>Pack Size (g)</th>
-            <th>Price</th>
-            <th>Current Stock</th>
-            <th>Enter Quantity (g)</th>
+            <th>Name</th>
+            <th>Enter Quantity Sold</th>
           </tr>
         </thead>
-          {% for ingredient in ingredients %}
+          {% for recipe in recipes %}
           <tr>
-            <td>{{ ingredient.product_code }}</td>
-            <td>{{ ingredient.ingredient|title }}</td>
-            <td>{{ ingredient.pack_size }}</td>
-            <td>{{ ingredient.price_per_pack }}</td>
-            <td>{{ ingredient.amount }}</td>
+            <td>{{ recipe.code }}</td>
+            <td>{{ recipe.name|title }}</td>
             <td>
               <input
                 type="number"
                 class="form-control-sm"
                 placeholder="Enter quantity"
-                name="ingredient_{{ ingredient.product_code }}"
+                name="recipe_{{ recipe.code }}"
                 step="0.01"
               />
             </td>

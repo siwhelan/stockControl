@@ -63,8 +63,6 @@ def calculate_recipe_costs():
         # Print a success message
         print(f"Successfully calculated cost for recipe {recipe['name']}")
 
-calculate_recipe_costs()
-
 
 def delete_amounts():
     # Connect to MongoDB
@@ -76,16 +74,20 @@ def delete_amounts():
     ingredients.update_many({}, {"$unset": {"amount": ""}})
 
 
-def add_amounts():
+def reset_amounts():
     # Connect to the MongoDB database
     client = MongoClient("mongodb://localhost:27017/")
     db = client["stock_control"]
     collection = db["ingredients"]
 
+    # Remove old_amount and amount fields from all documents
+    result = collection.update_many({}, {"$unset": {"amount": ""}})
+    print(f"Removed amount fields from {result.modified_count} documents.")
+
     # Loop through all documents in the "ingredients" collection
     for doc in collection.find():
         # Retrieve the current value of "pack_size" for this document
-        pack_size = doc["pack_size"]
+        pack_size = 10 * doc["pack_size"]
 
         # Add the value of "pack_size" to the current amount for this ingredient
         new_amount = doc.get("amount", 0) + pack_size
@@ -97,18 +99,5 @@ def add_amounts():
 
     print("All ingredients have been updated with new amounts.")
 
-from pymongo import MongoClient
-
-# Connect to MongoDB
-client = MongoClient("mongodb://localhost:27017/")
-db = client["stock_control"]
-collection = db["ingredients"]
-
-# Define the query to delete documents with "code" field >= "0065"
-query = { "product_code": { "$gte": "0065" } }
-
-# Delete matching documents
-result = collection.delete_many(query)
-
-# Print the number of deleted documents
-print(f"{result.deleted_count} documents deleted.")
+    # Close the connection to MongoDB
+    client.close()
