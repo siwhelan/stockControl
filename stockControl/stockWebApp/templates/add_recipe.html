@@ -1,99 +1,116 @@
-{% extends "base.html" %} {% block content %}
-
+{% extends "base.html" %} 
+{% block content %}
 <div class="container mx-auto">
-  <form>
-    <div class="form-group">
-      <input
-        type="text"
-        class="form-control form-floating mx-auto mb-3"
-        id="name"
-        name="name"
-        placeholder="Recipe Name"
-      />
-    </div>
+  {% if message %}
+  <div class="alert alert-{{ alert_type }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
 
-    <div id="ingredients">
-      <div class="form-group ms-auto">
-        <div class="row">
-          <div class="col-4">
-            <input
-              type="text"
-              class="form-control form-floating col-sm-6 mb-3"
-              id="ingredient1"
-              name="ingredient1"
-              placeholder="Ingredient"
-            />
-          </div>
-          <div class="col-4">
-            <input
-              type="text"
-              class="form-control form-floating col-sm-6 mb-3"
-              id="amount1"
-              name="amount1"
-              placeholder="Amount"
-            />
-          </div>
-          <div class="col-4">
-            <button
-              class="btn btn-danger"
-              type="button"
-              onclick="removeIngredient(this)"
-            >
-              Remove
-            </button>
-          </div>
-        </div>
+    <form method="POST" action="{% url 'add_recipe' %}">
+      {% csrf_token %}
+      <div class="form-group mb-4">
+        <input
+          type="text"
+          class="form-control mx-auto"
+          id="name"
+          name="name"
+          placeholder="Enter recipe name"
+          style="max-width: 500px;"
+        />
       </div>
-    </div>
 
-    <div class="d-flex justify-content-end">
-      <button
-        class="btn bg-gradient-primary shadow me-2"
-        type="button"
-        onclick="addIngredient()"
-      >
-        Add Ingredient
-      </button>
-      <button class="btn bg-gradient-primary shadow" type="submit">
-        Save Recipe
-      </button>
-    </div>
-  </form>
-</div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Ingredient</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="ingredients">
+          <tr>
+            <td>
+              <input
+                type="text"
+                class="form-control"
+                id="ingredient_1"
+                name="ingredient_1"
+                placeholder="Enter ingredient"
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                class="form-control"
+                id="amount_1"
+                name="amount_1"
+                placeholder="Enter amount"
+              />
+            </td>
+            <td>
+              <button
+                class="btn btn-danger"
+                type="button"
+                onclick="removeIngredient(this)"
+              >
+                Remove
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  let ingredientIndex = 1
+      <div class="d-flex justify-content-end">
+        <button
+          class="btn bg-gradient-primary me-2"
+          type="button"
+          onclick="addIngredient()"
+        >
+          Add Ingredient
+        </button>
+        <button class="btn bg-gradient-primary" type="submit">
+          Save Recipe
+        </button>
+      </div>
+    </form>
+  </div>
 
-  function addIngredient() {
-    const newInput = `
-        <div class="form-group">
-          <div class="row">
-            <div class="col-4">
-              <input type="text" class="form-control form-floating col-sm-6 mx-auto mb-3" id="ingredient${
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    let ingredientIndex = 1
+
+    function addIngredient() {
+      const newInput = `
+          <tr>
+            <td>
+              <input type="text" class="form-control" id="ingredient_${
                 ingredientIndex + 1
-              }" name="ingredient${
-      ingredientIndex + 1
-    }" placeholder="Ingredient">
-            </div>
-            <div class="col-4">
-              <input type="text" class="form-control form-floating col-sm-6 mx-auto mb-3" id="amount${
+              }" name="ingredient_${
+        ingredientIndex + 1
+      }" placeholder="Enter ingredient" />
+            </td>
+            <td>
+              <input type="number" class="form-control" id="amount_${
                 ingredientIndex + 1
-              }" name="amount${ingredientIndex + 1}" placeholder="Amount">
-            </div>
-            <div class="col-4">
+              }" name="amount_${
+        ingredientIndex + 1
+      }" placeholder="Enter amount" />
+            </td>
+            <td>
               <button class="btn btn-danger" type="button" onclick="removeIngredient(this)">Remove</button>
-            </div>
-          </div>
-        </div>
-      `
-    $('#ingredients').append(newInput)
-    ingredientIndex++
-  }
+            </td>
+          </tr>
+        `
+      $('#ingredients').append(newInput)
+      ingredientIndex++
+    }
 
-  function removeIngredient(button) {
-    $(button).closest('.form-group').remove()
-  }
-</script>
+    function removeIngredient(button) {
+      $(button).closest('tr').remove()
+    }
+  </script>
 
 {% endblock %}
+</div>

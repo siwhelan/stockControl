@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from django.shortcuts import render
+from django.contrib import messages
 import pymongo
 
 
@@ -372,7 +373,100 @@ def view_recipe(request):
 
 
 def add_recipe(request):
-    return render(request, "add_recipe.html")
+    # Import the MongoClient class from the PyMongo library
+    from pymongo import MongoClient
+
+    # Connect to MongoDB on the local machine using the default port
+    client = MongoClient("mongodb://localhost:27017/")
+
+    # Set the name of the database to use
+    db = client["stock_control"]
+
+    # Set the names of the collections to use
+    recipes_collection = db["recipes"]
+    ingredients_collection = db["ingredients"]
+
+    # Create an empty list to hold any errors related to the ingredients
+    ingredient_errors = []
+
+    # Check if the HTTP request method is "POST"
+    if request.method == "POST":
+
+        # Extract the name of the recipe from the form data
+        name = request.POST.get("name")
+
+        # Create an empty dictionary to hold the ingredients and their amounts
+        ingredients = {}
+
+        # Loop over all the keys in the form data to extract the ingredients
+        for key in request.POST:
+
+            # If the key starts with "ingredient_" and has a non-empty value
+            if key.startswith("ingredient_") and request.POST.get(key):
+
+                # Extract the name of the ingredient
+                ingredient_name = request.POST.get(key)
+
+                # Extract the amount of the ingredient
+                amount_key = "amount" + key.split("ingredient")[1]
+                amount = request.POST.get(amount_key)
+
+                # Add the ingredient and its amount to the dictionary
+                ingredients[ingredient_name] = int(amount)
+
+                # Check if the ingredient does not exist in the "ingredients" collection
+                if not ingredients_collection.find_one(
+                    {"ingredient": ingredient_name}
+                ):
+                    # If it does not exist, add an error message to the list of errors
+                    message = f"{ingredient_name.title()} not in database. Please add it first"
+                    alert_type = "danger"
+                    return render(
+                        request,
+                        "add_recipe.html",
+                        {
+                            "message": message,
+                            "alert_type": alert_type,
+                        },
+                    )
+
+        # If no ingredient errors were found
+        if len(ingredient_errors) == 0:
+
+            # Get the last recipe code from the "recipes" collection
+            last_recipe = recipes_collection.find_one(sort=[("code", -1)])
+
+            # If a recipe exists, generate a new code by incrementing the last code; otherwise, use 1 as the code
+            new_code = int(last_recipe["code"]) + 1 if last_recipe else 1
+
+            # Pad the code with leading zeros so it has 5 digits
+            code = str(new_code).zfill(5)
+
+            # Create a new recipe document with the name, ingredients, and code
+            recipe_doc = {
+                "name": name,
+                "ingredients": ingredients,
+                "code": code,
+            }
+
+            # Insert the new recipe document into the "recipes" collection
+            recipes_collection.insert_one(recipe_doc)
+
+            # Render a success message and the "add_recipe" form with a list of ingredients
+            message = "Recipe saved successfully."
+            alert_type = "success"
+            return render(
+                request,
+                "add_recipe.html",
+                {
+                    "message": message,
+                    "alert_type": alert_type,
+                },
+            )
+
+    # If there are ingredient errors, render the "add_recipe" form with the list of errors
+    context = {"ingredient_errors": ingredient_errors}
+    return render(request, "add_recipe.html", context)
 
 
 def save_stock_entry(request):
