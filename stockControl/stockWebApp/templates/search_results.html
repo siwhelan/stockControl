@@ -1,0 +1,52 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div class="col-12 text-center">
+    {% if message %}
+    <div
+      class="alert alert-{{ alert_type }} alert-dismissible fade show"
+      role="alert"
+    >
+      {{ message }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endif %}
+    <br />
+    <br />
+    <div class="container">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for recipe in recipe_data %}
+        <div class="col fade-in">
+          <div class="card flex-grow-1 card-hover">
+            <div class="card text-bg-light">
+              <div class="card-body text-center">
+                <br />
+                <h5 class="card-title mb-2">{{ recipe.name|title }}</h5>
+                <p class="card-text">
+                  Code:
+                  <span>{{ recipe.code }}</span>
+                  &nbsp;&nbsp; Total Cost:
+                  <span>{{ recipe.recipe_cost|floatformat:2 }}</span>
+                </p>
+                <br />
+                <ul class="list-group list-group-flush">
+                  {% for ingredient, quantity in recipe.ingredients.items %}
+                  <li class="list-group-item">
+                    {{ ingredient|title }}: {{ quantity }}g
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endblock %}
+  </div>
+</div>

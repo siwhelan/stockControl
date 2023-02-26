@@ -30,7 +30,7 @@
             <a class="navbar-brand" href="{% url 'home' %}">
               <img
                 src="https://i.imgur.com/G8FIu6e.jpg"
-                alt="My Image"
+                alt="swhelan.dev logo"
                 height="31"
                 width="209"
               />
@@ -128,9 +128,17 @@
                       </a>
                     </li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="#">Update Recipe</a></li>
+                    <li>
+                      <a class="dropdown-item" href="{% url 'edit_recipe' %}">
+                        Update Recipe
+                      </a>
+                    </li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="#">Delete Recipe</a></li>
+                    <li>
+                      <a class="dropdown-item" href="{% url 'delete_recipe' %}">
+                        Delete Recipe
+                      </a>
+                    </li>
                   </ul>
                 </li>
                 <li class="nav-item">
@@ -145,12 +153,17 @@
                   <a class="nav-link" href="{% url 'wastage' %}">Wastage</a>
                 </li>
               </ul>
-              <form class="d-flex" role="search">
+              <form
+                class="d-flex"
+                role="search"
+                action="{% url 'search_recipes' %}"
+              >
                 <input
                   class="form-control me-2"
                   type="search"
-                  placeholder="Search"
+                  placeholder="Recipe Search"
                   aria-label="Search"
+                  name="q"
                 />
                 <button class="btn btn-outline-success" type="submit">
                   Search

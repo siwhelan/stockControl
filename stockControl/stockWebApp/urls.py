@@ -20,4 +20,7 @@ urlpatterns = [
     ),
     path("recipes/view/", views.view_recipe, name="view_recipe"),
     path("recipes/new/", views.add_recipe, name="add_recipe"),
+    path("recipes/delete/", views.delete_recipe, name="delete_recipe"),
+    path("recipes/edit/", views.edit_recipe, name="edit_recipe"),
+    path('search/', views.search_recipes, name='search_recipes'),
 ]

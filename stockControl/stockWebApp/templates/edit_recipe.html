@@ -1,0 +1,116 @@
+{% extends "base.html" %} 
+{% block content %}
+<div class="container mx-auto">
+  {% if message %}
+  <div class="alert alert-{{ alert_type }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
+
+    <form method="POST" action="{% url 'edit_recipe' %}">
+      {% csrf_token %}
+      <div class="form-group mb-4">
+        <input
+          type="number"
+          class="form-control mx-auto"
+          id="code"
+          name="code"
+          placeholder="Enter recipe code"
+          style="max-width: 500px;"
+        />
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Ingredient</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="ingredients">
+          <tr>
+            <td>
+              <input
+                type="text"
+                class="form-control"
+                id="ingredient_1"
+                name="ingredient_1"
+                placeholder="Enter ingredient"
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                class="form-control"
+                id="amount_1"
+                name="amount_1"
+                placeholder="Enter amount"
+              />
+            </td>
+            <td>
+              <button
+                class="btn btn-danger"
+                type="button"
+                onclick="removeIngredient(this)"
+              >
+                Remove
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="d-flex justify-content-end">
+        <button
+          class="btn bg-gradient-primary me-2"
+          type="button"
+          onclick="addIngredient()"
+        >
+          Add Ingredient
+        </button>
+        <button class="btn bg-gradient-primary" type="submit">
+          Edit Recipe
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    let ingredientIndex = 1
+
+    function addIngredient() {
+      const newInput = `
+          <tr>
+            <td>
+              <input type="text" class="form-control" id="ingredient_${
+                ingredientIndex + 1
+              }" name="ingredient_${
+        ingredientIndex + 1
+      }" placeholder="Enter ingredient" />
+            </td>
+            <td>
+              <input type="number" class="form-control" id="amount_${
+                ingredientIndex + 1
+              }" name="amount_${
+        ingredientIndex + 1
+      }" placeholder="Enter amount" />
+            </td>
+            <td>
+              <button class="btn btn-danger" type="button" onclick="removeIngredient(this)">Remove</button>
+            </td>
+          </tr>
+        `
+      $('#ingredients').append(newInput)
+      ingredientIndex++
+    }
+
+    function removeIngredient(button) {
+      $(button).closest('tr').remove()
+    }
+  </script>
+
+{% endblock %}
+</div>

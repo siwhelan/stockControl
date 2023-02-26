@@ -1,0 +1,73 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  {% if message %}
+  <div
+    class="alert alert-{{ alert_type }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endif %}
+  <form
+    method="POST"
+    action="{% url 'delete_recipe' %}"
+    id="delete_recipe_form"
+  >
+    {% csrf_token %}
+    <div class="form-floating col-sm-6 mx-auto mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="ingredient"
+        placeholder="Recipe Code"
+        name="recipe"
+        form="delete_recipe_form"
+      />
+      <label for="recipe">Enter Recipe Code</label>
+    </div>
+    <div class="d-grid gap-2 col-4 mx-auto">
+      <button
+        type="submit"
+        class="btn bg-gradient-primary"
+        form="delete_recipe_form"
+      >
+        Delete Recipe
+      </button>
+    </div>
+  </form>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for recipe in recipe_data %}
+    <div class="col fade-in">
+      <div class="card flex-grow-1 card-hover">
+        <div class="card text-bg-light">
+          <div class="card-body text-center">
+            <br />
+            <h5 class="card-title mb-2">{{ recipe.name|title }}</h5>
+            <p class="card-text">
+              Code:
+              <span>{{ recipe.code }}</span>
+              &nbsp;&nbsp; Total Cost:
+              <span>{{ recipe.recipe_cost|floatformat:2 }}</span>
+            </p>
+            <br />
+            <ul class="list-group list-group-flush">
+              {% for ingredient, quantity in recipe.ingredients.items %}
+              <li class="list-group-item">
+                {{ ingredient|title }}: {{ quantity }}g
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

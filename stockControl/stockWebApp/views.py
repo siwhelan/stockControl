@@ -419,7 +419,7 @@ def add_recipe(request):
                     {"ingredient": ingredient_name}
                 ):
                     # If it does not exist, add an error message to the list of errors
-                    message = f"{ingredient_name.title()} not in database. Please add it first"
+                    message = f"'{ingredient_name.title()}' not found in database. Please add it first"
                     alert_type = "danger"
                     return render(
                         request,
@@ -467,6 +467,126 @@ def add_recipe(request):
     # If there are ingredient errors, render the "add_recipe" form with the list of errors
     context = {"ingredient_errors": ingredient_errors}
     return render(request, "add_recipe.html", context)
+
+
+def delete_recipe(request):
+
+    if request.method == "POST":
+        # Connect to MongoDB
+        client = MongoClient("mongodb://localhost:27017/")
+        db = client["stock_control"]
+        recipes = db["recipes"]
+
+        # Get the user input from the form
+        code = request.POST.get("recipe", "")
+
+        # Check if the ingredient exists
+        existing_code = recipes.find_one({"code": code})
+        if existing_code is None:
+            # If the ingredient doesn't exist, display an error message
+            message = "Recipe not found"
+            alert_type = "danger"
+            recipes = recipes.find()
+            return render(
+                request,
+                "delete_recipe.html",
+                {
+                    "recipes": code,
+                    "message": message,
+                    "alert_type": alert_type,
+                },
+            )
+        else:
+            # Delete the ingredient
+            recipes.delete_one({"code": code})
+            # Render success message in the update_ingredient.html template
+            recipes = recipes.find()
+            message = "Recipe deleted successfully."
+            alert_type = "success"
+            return render(
+                request,
+                "delete_recipe.html",
+                {
+                    "recipes": recipes,
+                    "message": message,
+                    "alert_type": alert_type,
+                },
+            )
+    # If the form has not been submitted, display the page
+    return render(request, "delete_recipe.html")
+
+
+def edit_recipe(request):
+    # Connect to MongoDB
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["stock_control"]
+    recipes_collection = db["recipes"]
+    ingredients_collection = db["ingredients"]
+
+    # Create an empty list to hold any errors related to the ingredients
+    ingredient_errors = []
+
+    # Check if the HTTP request method is "POST"
+    if request.method == "POST":
+
+        # Extract the code of the recipe from the form data
+        code = request.POST.get("code")
+        print(f"recipe code = {code}")
+        # Create an empty dictionary to hold the ingredients and their amounts
+        ingredients = {}
+
+        # Loop over all the keys in the form data to extract the ingredients
+        for key in request.POST:
+
+            # If the key starts with "ingredient_" and has a non-empty value
+            if key.startswith("ingredient_") and request.POST.get(key):
+
+                # Extract the name of the ingredient
+                ingredient_name = request.POST.get(key)
+
+                # Extract the amount of the ingredient
+                amount_key = "amount" + key.split("ingredient")[1]
+                amount = request.POST.get(amount_key)
+
+                # Add the ingredient and its amount to the dictionary
+                ingredients[ingredient_name] = int(amount)
+
+                # Check if the ingredient does not exist in the "ingredients" collection
+                if not ingredients_collection.find_one(
+                    {"ingredient": ingredient_name}
+                ):
+                    # If it does not exist, add an error message to the list of errors
+                    message = f"'{ingredient_name.title()}' not found in database. Please add it first"
+                    alert_type = "danger"
+                    return render(
+                        request,
+                        "add_recipe.html",
+                        {
+                            "message": message,
+                            "alert_type": alert_type,
+                        },
+                    )
+
+        # If no ingredient errors were found
+        if len(ingredient_errors) == 0:
+
+            # Update the recipe document in the "recipes" collection with the new ingredients and amounts
+            recipes_collection.update_one(
+                {"code": code}, {"$set": {"ingredients": ingredients}}
+            )
+
+            # Render a success message and redirect to the recipe list page
+            message = "Recipe updated successfully."
+            alert_type = "success"
+            return render(
+                request,
+                "edit_recipe.html",
+                {"message": message, "alert_type": alert_type},
+            )
+
+    # If there are ingredient errors, render the "edit_recipe" form with the list of errors
+    context = {"ingredient_errors": ingredient_errors}
+    return render(request, "edit_recipe.html", context)
 
 
 def save_stock_entry(request):
@@ -583,4 +703,68 @@ def orders(request):
         ingredients = db["ingredients"].find()
         return render(
             request, "place_orders.html", {"ingredients": ingredients}
+        )
+
+
+def search_recipes(request):
+
+    calculate_recipe_costs()
+    # Get the search query from the request
+    query = request.GET.get("q")
+
+    # Connect to MongoDB
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["stock_control"]
+    recipes_collection = db["recipes"]
+
+    # Query the "recipes" collection for recipes that contain the search query
+    # in either the name, the code, or the ingredients
+    results = recipes_collection.find(
+        {
+            # Use the "$or" operator to search for recipes that match any of the following conditions
+            "$or": [
+                # Search for recipes where the "name" field matches the search query,
+                # using a case-insensitive regular expression
+                {"name": {"$regex": query, "$options": "i"}},
+                # Search for recipes where the "code" field matches the search query,
+                # using a case-insensitive regular expression
+                {"code": {"$regex": query, "$options": "i"}},
+                # Search for recipes where any key in the "ingredients" dictionary matches the search query,
+                # using a case-insensitive regular expression
+                {
+                    "ingredients": {
+                        "$regex": "\\b" + query + "\\b",
+                        "$options": "i",
+                    }
+                },
+                # Search for recipes where the "ingredients" dictionary contains a key
+                # that matches the search query, using JavaScript code
+                # JS is necessary to perform a more complex search for keys in the ingredients dictionary that matched the search query.
+                # in hindsight the recipes are not being stored in the most efficient way, but this is a quick fix.
+                {
+                    "$where": f"function() {{return Object.keys(this.ingredients).some(function(key) {{return /{query}/i.test(key);}});}}"
+                },
+            ]
+        }
+    )
+
+    # Convert the cursor to a list to retrieve the actual results
+    results = list(results)
+    print(results)
+    # Render the search results template with the recipe data and the search query
+    if results:
+        # Render the search results template with the recipe data and the search query
+        return render(
+            request,
+            "search_results.html",
+            {"recipe_data": results, "query": query},
+        )
+    else:
+        # Set the message variable and alert type in case there are no search results
+        message = "No results found."
+        alert_type = "danger"
+        return render(
+            request,
+            "search_results.html",
+            {"message": message, "alert_type": alert_type},
         )
