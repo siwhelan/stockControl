@@ -330,7 +330,8 @@ def calculate_recipe_costs():
             ingredient_info = ingredients_collection.find_one(
                 {"ingredient": ingredient}
             )
-            # Calculate the cost of the ingredient by multiplying the quantity needed by the price per pack
+            # Calculate the cost of the ingredient by
+            # multiplying the quantity needed by the price per pack
             ingredient_cost = (
                 quantity
                 * ingredient_info["price_per_pack"]
@@ -339,16 +340,14 @@ def calculate_recipe_costs():
             # Add the cost of the ingredient to the total cost
             cost += ingredient_cost
 
-        # Calculate the selling price of the recipe with a 75% gross profit margin
+        # Calculate the selling price of the
+        # recipe with a 75% gross profit margin
         selling_price = cost / 0.25
-        # Update the recipe document with the calculated cost and selling price
+        # Update the recipe document with the
+        # calculated cost and selling price
         recipes_collection.update_one(
             {"_id": recipe["_id"]},
             {"$set": {"recipe_cost": cost, "selling_price": selling_price}},
-        )
-        # Print a success message
-        print(
-            f"Successfully calculated cost and selling price for recipe {recipe['name']}"
         )
 
 
@@ -538,7 +537,6 @@ def edit_recipe(request):
 
         # Extract the code of the recipe from the form data
         code = request.POST.get("code")
-        print(f"recipe code = {code}")
         # Create an empty dictionary to hold the ingredients and their amounts
         ingredients = {}
 
@@ -680,21 +678,24 @@ def orders(request):
         client = MongoClient("mongodb://localhost:27017/")
         db = client["stock_control"]
         ingredients = db["ingredients"]
-
         # Parse form data
         for key, value in request.POST.items():
             if key.startswith("ingredient_") and value != "":
                 product_code = key.split("_")[1]
+                # Fetch the pack size for this product code from MongoDB
+                pack_size_doc = ingredients.find_one(
+                    {"product_code": product_code}, {"pack_size": 1}
+                )
+                pack_size = pack_size_doc["pack_size"]
                 # convert to float and remove commas
                 amount = float(value.replace(",", ""))
-
+                amount = amount * pack_size
                 # Update MongoDB document by adding the
                 # ordered amount to the the existing one.
                 ingredients.update_one(
                     {"product_code": product_code},
                     {"$inc": {"amount": amount}},
                 )
-
         # Render success message in the same template
         message = "Orders placed with your suppliers."
         ingredients = ingredients.find()
@@ -757,7 +758,6 @@ def search_recipes(request):
 
     # Convert the cursor to a list to retrieve the actual results
     results = list(results)
-    print(results)
     # Render the search results template with the recipe data and the search query
     if results:
         # Render the search results template with the recipe data and the search query
