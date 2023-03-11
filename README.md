@@ -4,7 +4,7 @@ A Django web app designed to streamline a commercial catering facility's operati
 
 With the aim of providing a complete food management system, this project leverages my experience in the hospitality industry to offer a user-friendly solution for monitoring food costs and kitchen management.
 
-## 🎥 Video Demo -> [Link](https://www.youtube.com/watch?v=a4n57JMSNXU)
+## 🎥 Video Demo -> <a href="https://www.youtube.com/watch?v=a4n57JMSNXU" target="_blank">Link</a>
 
 The main features are -
 
