@@ -11,12 +11,14 @@ The main features are -
 
 ## 🍅 Ingredients -
 
-View / Add / Edit / Delete
+#### View / Add / Edit / Delete
+
 Ingredients are stored with name, pack size (weight) and price per pack. A four digit reference code is auto assigned upon entry to the database. An amount is stored that is defaulted to match the pack size to simulate the current stock level of each ingredient.
 
 ## 🍴 Recipes -
 
-View / Add / Edit / Delete
+#### View / Add / Edit / Delete
+
 Recipes are stored with name, ingredients list with amounts, and a five digit auto-assigned reference code. A cost is calculated using the prices of each Ingredient in the relative database collection, and a recommended selling price is added by calculating a 75% Gross Profit margin based on the full cost of each recipe. These details are all displayed in the recipe card view.
 
 ## 📦 Stock Entry -
@@ -39,6 +41,6 @@ This displays all recipes in the database and allows the user to input the numbe
 
 Allows searching by recipe code or name. The user can also search for a particular ingredient, which then displays the recipe cards of all recipes that contain it.
 
-Blog series - https://lnkd.in/eewznxnD
-
+## 📝 Blog series - https://lnkd.in/eewznxnD
+<br>
 Feedback is welcome and appreciated! 👋
